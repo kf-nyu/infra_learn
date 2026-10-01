@@ -81,7 +81,8 @@ echo
 echo
 
 echo "=== Test 2: Gateway ON — ping should SUCCEED ==="
-if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
+# if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
+if docker exec internal_server curl --connect-timeout 5 https://1.1.1.1 then
     echo "PASS: Internet reachable through gateway"
 else
     echo "ERROR: Internet unreachable after gateway started"
