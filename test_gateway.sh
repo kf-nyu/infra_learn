@@ -61,6 +61,15 @@ echo "=== Gateway server routing table ==="
 docker exec gateway_server ip r
 
 echo
+echo "=== Gateway IP forwarding ==="
+docker exec gateway_server sysctl net.ipv4.ip_forward
+echo
+
+echo
+echo "=== Gateway NAT rule before ping ==="
+docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
+echo
+
 echo "=== Test 2: Gateway ON — ping should SUCCEED ==="
 if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
     echo "PASS: Internet reachable through gateway"
