@@ -37,7 +37,8 @@ docker exec internal_server ip r
 
 echo
 echo "=== Test 1: Gateway OFF — ping should FAIL ==="
-if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
+# if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
+if docker exec internal_server curl --connect-timeout 5 https://1.1.1.1; then
     echo "ERROR: Internal server reached the Internet while gateway was OFF"
     exit 1
 else
@@ -65,19 +66,8 @@ echo "=== Gateway IP forwarding ==="
 docker exec gateway_server sysctl net.ipv4.ip_forward
 echo
 
-echo
-echo "=== Gateway Internet connectivity ==="
-docker exec gateway_server curl -I --max-time 10 https://example.com
-echo
-
 echo "=== Gateway NAT rule before ping ==="
 docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
-echo
-
-echo "=== Test Internet ==="
-docker exec gateway_server iptables -L FORWARD -v -n
-docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
-echo
 echo
 
 echo "=== Test 2: Gateway ON — ping should SUCCEED ==="
@@ -86,8 +76,6 @@ if docker exec internal_server curl --connect-timeout 5 https://1.1.1.1; then
     echo "PASS: Internet reachable through gateway"
 else
     echo "ERROR: Internet unreachable after gateway started"
-    docker exec gateway_server iptables -L FORWARD -v -n
-	docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
 	exit 1
 fi
 
