@@ -1,0 +1,25 @@
+name: Gateway Network Test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  gateway-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run gateway test
+        run: |
+          chmod +x test_gateway.sh
+          ./test_gateway.sh
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-test-log
+          path: gateway_test_*.log
