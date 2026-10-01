@@ -24,7 +24,7 @@ services:
     cap_add:
       - NET_ADMIN
     command: >
-      sh -c "iptables -t nat -A POSTROUTING -s 172.18.0.0/16 -o eth0 -j MASQUERADE && sleep infinity"
+      sh -c "iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -d 172.18.0.0/16 -j MASQUERADE && sleep infinity"
     # command: sleep infinity  # in Dockerfile
     networks:
       external_bridge:
