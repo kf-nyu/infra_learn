@@ -74,12 +74,20 @@ echo "=== Gateway NAT rule before ping ==="
 docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
 echo
 
+echo "=== Test Internet ==="
+docker exec gateway_server iptables -L FORWARD -v -n
+docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
+echo
+echo
+
 echo "=== Test 2: Gateway ON — ping should SUCCEED ==="
 if docker exec internal_server ping -c 4 -W 2 1.1.1.1; then
     echo "PASS: Internet reachable through gateway"
 else
     echo "ERROR: Internet unreachable after gateway started"
-    exit 1
+    docker exec gateway_server iptables -L FORWARD -v -n
+	docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
+	exit 1
 fi
 
 echo
