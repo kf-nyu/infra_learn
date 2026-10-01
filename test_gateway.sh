@@ -67,7 +67,7 @@ echo
 
 echo
 echo "=== Gateway Internet connectivity ==="
-docker exec gateway_server ping -c 4 -W 2 1.1.1.1
+docker exec gateway_server curl -I --max-time 10 https://example.com
 echo
 
 echo "=== Gateway NAT rule before ping ==="
