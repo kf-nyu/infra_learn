@@ -66,6 +66,10 @@ docker exec gateway_server sysctl net.ipv4.ip_forward
 echo
 
 echo
+echo "=== Gateway Internet connectivity ==="
+docker exec gateway_server ping -c 4 -W 2 1.1.1.1
+echo
+
 echo "=== Gateway NAT rule before ping ==="
 docker exec gateway_server iptables -t nat -L POSTROUTING -v -n
 echo
