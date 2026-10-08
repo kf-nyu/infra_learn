@@ -1,0 +1,55 @@
+# Task 2 is its own Compose project so it does not share networks,
+# container names, or subnets with the Task 1 gateway lab.
+
+name: task2
+
+networks:
+  external_bridge:
+    name: task2_external_bridge
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
+  internal_private:
+    name: task2_internal_private
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+    internal: true # This is to completely shut off native internet access
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+services:
+  proxy:
+    build: .  # from Dockerfile
+    # image: ubuntu:24.04
+    container_name: task2_proxy
+    depends_on:
+      - internal_app
+    command: >
+      sh -c "nginx -g 'daemon off;'"
+    # command: sleep infinity  # in Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/sites-enabled/default:ro
+    networks:
+      external_bridge:
+        ipv4_address: 172.31.0.10
+      internal_private:
+        ipv4_address: 172.30.0.10
+
+  internal_app:
+    build: .  # from Dockerfile
+    # image: ubuntu:24.04
+    container_name: task2_internal_app
+    environment:
+      - APP_NAME=Training App 2
+      - FLASK_APP=/app/app.py
+    command: >
+      sh -c "flask run --host 0.0.0.0 --port 8080"
+    # command: sleep infinity  # in Dockerfile
+    networks:
+      internal_private:
+        ipv4_address: 172.30.0.2

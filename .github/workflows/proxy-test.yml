@@ -1,26 +1,26 @@
-name: Gateway Network Test
+name: Reverse Proxy Test
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  gateway-test:
+  proxy-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run gateway test
-        working-directory: task1
+      - name: Run reverse proxy test
+        working-directory: task2
         run: |
-          chmod +x test_gateway.sh
-          ./test_gateway.sh
+          chmod +x test_proxy.sh
+          ./test_proxy.sh
 
       - name: Upload test log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gateway-test-log
-          path: task1/gateway_test_*.log
+          name: proxy-test-log
+          path: task2/proxy_test_*.log

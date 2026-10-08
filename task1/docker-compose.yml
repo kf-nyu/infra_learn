@@ -1,12 +1,17 @@
-# version: '3.8'
+# Task 1 is its own Compose project so it does not share networks,
+# container names, or subnets with the Task 2 proxy lab.
+
+name: task1
 
 networks:
   external_bridge:
+    name: task1_external_bridge
     driver: bridge
     ipam:
       config:
         - subnet: 172.19.0.0/16
   internal_private:
+    name: task1_internal_private
     driver: bridge
     driver_opts:
       com.docker.network.bridge.enable_ip_masquerade: "false"
