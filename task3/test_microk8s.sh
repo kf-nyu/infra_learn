@@ -38,17 +38,21 @@ else
     echo "ERROR: microk8s is not ready. Run ./setup_microk8s.sh on Linux first."
     exit 1
 fi
-export KUBECTL="${KUBECTL[*]}"
 
 echo
 echo "=== Choose the ingress class ==="
+echo
+echo "+ ${KUBECTL[*]} get ingressclass"
+"${KUBECTL[@]}" get ingressclass
 if "${KUBECTL[@]}" get ingressclass public >/dev/null 2>&1; then
     INGRESS_CLASS="public"
 elif "${KUBECTL[@]}" get ingressclass nginx >/dev/null 2>&1; then
     INGRESS_CLASS="nginx"
 else
-    echo "ERROR: no public or nginx IngressClass found. Enable the ingress addon."
-    "${KUBECTL[@]}" get ingressclass
+    INGRESS_CLASS="$("${KUBECTL[@]}" get ingressclass -o jsonpath='{.items[0].metadata.name}')"
+fi
+if [ -z "$INGRESS_CLASS" ]; then
+    echo "ERROR: no IngressClass found. Enable the ingress addon."
     exit 1
 fi
 echo "Ingress class: ${INGRESS_CLASS}"
@@ -69,7 +73,7 @@ fi
 
 echo
 echo "=== Start the Python app ==="
-python3 app.py >"/tmp/task3_flask.log" 2>&1 &
+KUBECTL="${KUBECTL[*]}" python3 app.py >"/tmp/task3_flask.log" 2>&1 &
 FLASK_PID=$!
 trap 'kill "$FLASK_PID" >/dev/null 2>&1 || true' EXIT
 
