@@ -1,6 +1,3 @@
-# Task 2 is its own Compose project so it does not share networks,
-# container names, or subnets with the Task 1 gateway lab.
-
 name: task2
 
 networks:

@@ -55,3 +55,26 @@ cd task2 && ./test_proxy.sh
 ```
 
 From the host, the app is also available through the proxy at `http://127.0.0.1:8080/`.
+
+## Task 3: MicroK8s and nginx
+
+Task 3 runs on Linux. MicroK8s does not run natively on macOS.
+
+One MicroK8s Service, `nginx`, is published on port 80 by the ingress addon. A Flask app on the host scales that Deployment:
+
+- `http://127.0.0.1:8081/spin-up` starts the nginx container
+- `http://127.0.0.1:8081/spin-down` stops it
+
+## Test
+
+1. `curl http://localhost` fails while nginx is down.
+2. Spin nginx up.
+3. `curl http://localhost` returns the nginx welcome page.
+4. Spin nginx down.
+5. `curl http://localhost` fails again.
+
+```bash
+cd task3
+./setup_microk8s.sh
+./test_microk8s.sh
+```

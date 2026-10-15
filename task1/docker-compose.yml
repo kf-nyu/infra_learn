@@ -1,6 +1,3 @@
-# Task 1 is its own Compose project so it does not share networks,
-# container names, or subnets with the Task 2 proxy lab.
-
 name: task1
 
 networks:

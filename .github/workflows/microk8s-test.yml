@@ -1,0 +1,35 @@
+name: MicroK8s Test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  microk8s-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up MicroK8s
+        working-directory: task3
+        run: |
+          chmod +x setup_microk8s.sh test_microk8s.sh
+          ./setup_microk8s.sh
+
+      - name: Run MicroK8s test
+        working-directory: task3
+        run: ./test_microk8s.sh
+
+      - name: Show cluster pods on failure
+        if: failure()
+        run: sudo microk8s kubectl get pods -A -o wide || true
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: microk8s-test-log
+          path: task3/microk8s_test_*.log
