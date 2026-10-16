@@ -67,14 +67,23 @@ One MicroK8s Service, `nginx`, is published on port 80 by the ingress addon. A F
 
 ## Test
 
-1. `curl http://localhost` fails while nginx is down.
+1. `curl http://localhost` fails while nginx is down, and Prometheus reports no available nginx replica.
 2. Spin nginx up.
-3. `curl http://localhost` returns the nginx welcome page.
+3. `curl http://localhost` returns the nginx welcome page, Prometheus reports one available replica, and Loki has the nginx `GET /` line.
 4. Spin nginx down.
-5. `curl http://localhost` fails again.
+5. `curl http://localhost` fails again, and Prometheus reports no available nginx replica.
+
+The same run checks Grafana's datasource list for Prometheus and Loki, and checks that Alertmanager is holding the Watchdog alert Prometheus sends on a healthy cluster.
 
 ```bash
 cd task3
 ./setup_microk8s.sh
+./setup_monitoring.sh
 ./test_microk8s.sh
 ```
+
+### Monitoring
+
+`setup_monitoring.sh` enables the MicroK8s observability addon. Prometheus collects cluster metrics, Grafana shows them, Alertmanager holds alerts, and Loki collects logs. GitHub Actions runs this setup before `test_microk8s.sh`.
+
+Grafana listens inside the cluster. The setup script prints the admin password and a port-forward command for `http://127.0.0.1:3000`. The test uses its own port-forwards and does not need that one.

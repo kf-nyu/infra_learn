@@ -7,7 +7,7 @@ on:
 jobs:
   microk8s-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -16,8 +16,12 @@ jobs:
       - name: Set up MicroK8s
         working-directory: task3
         run: |
-          chmod +x setup_microk8s.sh test_microk8s.sh
+          chmod +x setup_microk8s.sh setup_monitoring.sh test_microk8s.sh
           ./setup_microk8s.sh
+
+      - name: Set up monitoring
+        working-directory: task3
+        run: ./setup_monitoring.sh
 
       - name: Run MicroK8s test
         working-directory: task3
